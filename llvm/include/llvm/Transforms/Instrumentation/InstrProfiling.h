@@ -137,7 +137,7 @@ private:
 
   /// Check if our target supports 8 byte/ 64 bit Atomics. Don't use
   /// them if it doesn't.
-  bool targetSupportsAtomic();
+  bool targetSupportsAtomic() const;
 };
 
 } // end namespace llvm

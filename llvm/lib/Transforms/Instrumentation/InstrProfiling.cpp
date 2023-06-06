@@ -192,7 +192,7 @@ public:
         Value *BiasInst = Builder.Insert(OrigBiasInst->clone());
         Addr = Builder.CreateIntToPtr(BiasInst, Ty->getPointerTo());
       }
-      if (targetSupportsAtomic() && AtomicCounterUpdatePromoted)
+      if (AtomicCounterUpdatePromoted)
         // automic update currently can only be promoted across the current
         // loop, not the whole loop nest.
         Builder.CreateAtomicRMW(AtomicRMWInst::Add, Addr, LiveInValue,
@@ -1293,7 +1293,7 @@ void InstrProfiling::emitInitialization() {
   appendToGlobalCtors(*M, F, 0);
 }
 
-bool InstrProfiling::targetSupportsAtomic() {
+bool InstrProfiling::targetSupportsAtomic() const {
   // As far as I can tell, we don't have access to specific enough target
   // details here to really know if they support the atomic add or not. It seems
   // like a safe assumption though that only 64 bit targets will support the 64
