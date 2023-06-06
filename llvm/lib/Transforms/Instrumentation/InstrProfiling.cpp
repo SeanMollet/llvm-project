@@ -451,10 +451,17 @@ bool InstrProfiling::isRuntimeCounterRelocationEnabled() const {
 }
 
 bool InstrProfiling::isCounterPromotionEnabled() const {
-  if (DoCounterPromotion.getNumOccurrences() > 0)
-    return DoCounterPromotion;
+  // As far as I can tell, we don't have access to specific enough target
+  // details here to really know if they support the atomic add or not. It seems
+  // like a safe assumption though that only 64 bit targets will support the 64
+  // bit atomic operation we're going to inject.
+  if (TT.isArch64Bit()) {
+    if (DoCounterPromotion.getNumOccurrences() > 0)
+      return DoCounterPromotion;
 
-  return Options.DoCounterPromotion;
+    return Options.DoCounterPromotion;
+  }
+  return false;
 }
 
 void InstrProfiling::promoteCounterLoadStores(Function *F) {
