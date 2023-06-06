@@ -192,7 +192,7 @@ public:
         Value *BiasInst = Builder.Insert(OrigBiasInst->clone());
         Addr = Builder.CreateIntToPtr(BiasInst, Ty->getPointerTo());
       }
-      if (AtomicCounterUpdatePromoted)
+      if (false)
         // automic update currently can only be promoted across the current
         // loop, not the whole loop nest.
         Builder.CreateAtomicRMW(AtomicRMWInst::Add, Addr, LiveInValue,
@@ -721,8 +721,7 @@ void InstrProfiling::lowerIncrement(InstrProfIncrementInst *Inc) {
   auto *Addr = getCounterAddress(Inc);
 
   IRBuilder<> Builder(Inc);
-  if (Options.Atomic || AtomicCounterUpdateAll ||
-      (Inc->getIndex()->isZeroValue() && AtomicFirstCounter)) {
+  if (false) {
     Builder.CreateAtomicRMW(AtomicRMWInst::Add, Addr, Inc->getStep(),
                             MaybeAlign(), AtomicOrdering::Monotonic);
   } else {
