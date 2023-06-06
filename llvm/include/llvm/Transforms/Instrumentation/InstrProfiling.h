@@ -134,6 +134,10 @@ private:
   /// Create a static initializer for our data, on platforms that need it,
   /// and for any profile output file that was specified.
   void emitInitialization();
+
+  /// Check if our target supports 8 byte/ 64 bit Atomics. Don't use
+  /// them if it doesn't.
+  bool targetSupportsAtomic();
 };
 
 } // end namespace llvm

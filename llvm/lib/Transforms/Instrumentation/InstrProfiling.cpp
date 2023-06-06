@@ -192,7 +192,7 @@ public:
         Value *BiasInst = Builder.Insert(OrigBiasInst->clone());
         Addr = Builder.CreateIntToPtr(BiasInst, Ty->getPointerTo());
       }
-      if (false)
+      if (targetSupportsAtomic() && AtomicCounterUpdatePromoted)
         // automic update currently can only be promoted across the current
         // loop, not the whole loop nest.
         Builder.CreateAtomicRMW(AtomicRMWInst::Add, Addr, LiveInValue,
@@ -451,11 +451,7 @@ bool InstrProfiling::isRuntimeCounterRelocationEnabled() const {
 }
 
 bool InstrProfiling::isCounterPromotionEnabled() const {
-  // As far as I can tell, we don't have access to specific enough target
-  // details here to really know if they support the atomic add or not. It seems
-  // like a safe assumption though that only 64 bit targets will support the 64
-  // bit atomic operation we're going to inject.
-  if (TT.isArch64Bit()) {
+  if (targetSupportsAtomic()) {
     if (DoCounterPromotion.getNumOccurrences() > 0)
       return DoCounterPromotion;
 
@@ -721,7 +717,9 @@ void InstrProfiling::lowerIncrement(InstrProfIncrementInst *Inc) {
   auto *Addr = getCounterAddress(Inc);
 
   IRBuilder<> Builder(Inc);
-  if (false) {
+  if (targetSupportsAtomic() &&
+      (Options.Atomic || AtomicCounterUpdateAll ||
+       (Inc->getIndex()->isZeroValue() && AtomicFirstCounter))) {
     Builder.CreateAtomicRMW(AtomicRMWInst::Add, Addr, Inc->getStep(),
                             MaybeAlign(), AtomicOrdering::Monotonic);
   } else {
@@ -1293,4 +1291,13 @@ void InstrProfiling::emitInitialization() {
   IRB.CreateRetVoid();
 
   appendToGlobalCtors(*M, F, 0);
+}
+
+bool InstrProfiling::targetSupportsAtomic() {
+  // As far as I can tell, we don't have access to specific enough target
+  // details here to really know if they support the atomic add or not. It seems
+  // like a safe assumption though that only 64 bit targets will support the 64
+  // bit atomic operation we're going to inject.
+  // If this assumption is incorrect, additional logic can be added here.
+  return TT.isArch64Bit();
 }
