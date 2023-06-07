@@ -454,13 +454,13 @@ bool InstrProfiling::isRuntimeCounterRelocationEnabled() const {
 }
 
 bool InstrProfiling::isCounterPromotionEnabled() const {
-  if (targetSupportsAtomic()) {
-    if (DoCounterPromotion.getNumOccurrences() > 0)
-      return DoCounterPromotion;
+  if (!targetSupportsAtomic())
+    return false;
 
-    return Options.DoCounterPromotion;
-  }
-  return false;
+  if (DoCounterPromotion.getNumOccurrences() > 0)
+    return DoCounterPromotion;
+
+  return Options.DoCounterPromotion;
 }
 
 void InstrProfiling::promoteCounterLoadStores(Function *F) {
