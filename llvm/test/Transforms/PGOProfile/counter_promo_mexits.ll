@@ -1,5 +1,7 @@
 ; RUN: opt < %s --passes=pgo-instr-gen,instrprof -do-counter-promotion=true -speculative-counter-promotion-max-exiting=3 -S | FileCheck --check-prefix=PROMO %s
 
+target triple = "x86_64-apple-macosx10.10.0"
+
 @g = common local_unnamed_addr global i32 0, align 4
 
 define void @foo(i32 %arg) local_unnamed_addr {

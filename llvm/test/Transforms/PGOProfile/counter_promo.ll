@@ -1,6 +1,8 @@
 ; RUN: opt < %s --passes=pgo-instr-gen,instrprof -do-counter-promotion=true -skip-ret-exit-block=0 -S | FileCheck --check-prefix=PROMO --check-prefix=NONATOMIC_PROMO %s
 ; RUN: opt < %s --passes=pgo-instr-gen,instrprof -do-counter-promotion=true -atomic-counter-update-promoted -skip-ret-exit-block=0 -S | FileCheck --check-prefix=PROMO --check-prefix=ATOMIC_PROMO %s
 
+target triple = "x86_64-apple-macosx10.10.0"
+
 define void @foo(i32 %n, i32 %N) {
 ; PROMO-LABEL: @foo
 ; PROMO: {{.*}} = load {{.*}} @__profc_foo{{.*}} 3)
