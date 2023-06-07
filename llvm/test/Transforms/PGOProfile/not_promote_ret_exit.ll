@@ -1,6 +1,8 @@
 ; RUN: opt < %s -passes=instrprof -S -do-counter-promotion=1 -skip-ret-exit-block=1 | FileCheck %s --check-prefixes=CHECK,SKIP
 ; RUN: opt < %s -passes=instrprof -S -do-counter-promotion=1 -skip-ret-exit-block=0 | FileCheck %s --check-prefixes=CHECK,NOTSKIP
 
+target triple = "x86_64-apple-macosx10.10.0"
+
 $__llvm_profile_raw_version = comdat any
 
 @bar = dso_local local_unnamed_addr global i32 0, align 4

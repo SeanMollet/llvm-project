@@ -1,6 +1,8 @@
 ; TEST that counter updates are promoted outside the whole loop nest
 ; RUN: opt < %s --passes=pgo-instr-gen,instrprof -do-counter-promotion=true -S | FileCheck --check-prefix=PROMO  %s 
 
+target triple = "x86_64-apple-macosx10.10.0"
+
 @g = common local_unnamed_addr global i32 0, align 4
 @c = local_unnamed_addr global i32 10, align 4
 
